@@ -1,6 +1,6 @@
 from rest_framework import viewsets, generics, status
 from .models import *
-from .permissions import CheckOrder, UpdateCourier, CheckOwner, CreateReview, CheckStoreOwner, CheckStatus
+from .permissions import CheckOrder, UpdateCourier, CheckOwner, CreateReview, CheckStatus
 from .serializers import *
 from .filters import StoreFilter, ProductFilter, ComboFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -29,13 +29,11 @@ class UserProfileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class CategoryDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryDetailSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class StoreListAPIView(generics.ListAPIView):
@@ -60,19 +58,19 @@ class StoreImageViewSet(viewsets.ModelViewSet):
 
 class StoreCreateAPIView(generics.CreateAPIView):
     serializer_class = StoreSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner, CheckStatus]
+    permission_classes = [CheckOwner] #CheckStatus]
 
 
 class StoreEDITAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner, CheckStatus]
+    permission_classes = [CheckOwner]
 
 
 class Contact_InfoViewSet(viewsets.ModelViewSet):
     queryset = Contact_Info.objects.all()
     serializer_class = Contact_InfoSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner]
+    permission_classes = [IsAuthenticatedOrReadOnly, CheckOwner]
 
 
 class ProductListAPIView(generics.ListAPIView):
@@ -98,13 +96,13 @@ class ProductImageViewSet(viewsets.ModelViewSet):
 
 class ProductCreateAPIView(generics.CreateAPIView):
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner, CheckStatus]
+    permission_classes = [IsAuthenticatedOrReadOnly, CheckOwner, CheckStatus]
 
 
 class ProductEDITAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner, CheckStatus]
+    permission_classes = [IsAuthenticatedOrReadOnly, CheckOwner, CheckStatus]
 
 
 class ComboProductListAPIView(generics.ListAPIView):
@@ -120,18 +118,18 @@ class ComboProductListAPIView(generics.ListAPIView):
 class ComboProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ComboProduct.objects.all()
     serializer_class = ComboProductDetailSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner]
+    permission_classes = [IsAuthenticatedOrReadOnly, CheckOwner]
 
 
 class ComboProductCreateAPIView(generics.CreateAPIView):
     serializer_class = ComboProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner, CheckStatus]
+    permission_classes = [IsAuthenticatedOrReadOnly, CheckOwner, CheckStatus]
 
 
 class ComboProductEDITAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ComboProduct.objects.all()
     serializer_class = ComboProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, CheckStoreOwner, CheckStatus]
+    permission_classes = [IsAuthenticatedOrReadOnly, CheckOwner, CheckStatus]
 
 
 class CartViewSet(viewsets.ModelViewSet):
@@ -139,11 +137,17 @@ class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        return UserProfile.objects.filter(id=self.request.user.id)
+
 
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return UserProfile.objects.filter(id=self.request.user.id)
 
 
 class OrderListAPIView(generics.ListCreateAPIView):

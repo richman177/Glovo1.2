@@ -11,7 +11,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserProfileSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['first_name', 'last_name', 'user_name']
+        fields = ['first_name', 'last_name', 'username']
 
 class UserReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,43 +19,10 @@ class UserReviewSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name']
 
 
-class CategoryListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-
-class CategoryDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-
 class StoreImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoreImage
-        fields = '__all__'
-
-
-class StoreListSerializer(serializers.ModelSerializer):
-    store_category = CategoryListSerializer(read_only=True, many=True)
-    avg_rating = serializers.SerializerMethodField()
-    total_people = serializers.SerializerMethodField()
-    total_good = serializers.SerializerMethodField()
-    store_images = StoreImageSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = Store
-        fields = ['store_name', 'store_images', 'store_category', 'avg_rating','total_people', 'total_good']
-
-    def get_avg_rating(self, obj):
-       return obj.get_avg_rating()
-
-    def get_total_people(self, obj):
-       return obj.get_total_people()
-
-    def get_total_good(self, obj):
-       return obj.get_total_good()
+        fields = ['store_image']
 
 
 class StoreSerializer(serializers.ModelSerializer):
@@ -78,7 +45,7 @@ class Contact_InfoSerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = '__all__'
+        fields = ['product_image']
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -86,7 +53,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['product_name','product_images', 'price', 'store']
+        fields = ['product_name','product_images', 'price']
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -94,19 +61,19 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['product_name','product_images', 'price', 'store', 'description', 'quantity']
+        fields = ['product_name','product_images', 'price', 'description', 'quantity']
 
 
 class ComboProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComboProduct
-        fields = ['combo_name', 'combo_image', 'store', 'combo_price']
+        fields = ['combo_name', 'combo_image', 'combo_price']
 
 
 class ComboProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ComboProduct
-        fields = ['combo_name', 'combo_image', 'store', 'combo_price', 'description']
+        fields = ['combo_name', 'combo_image', 'combo_price', 'description']
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -150,11 +117,29 @@ class CourierListSerializer(serializers.ModelSerializer):
         model = Courier
         fields = ['user', 'current_orders']
 
+        def get_avg_rating(self, obj):
+            return obj.get_avg_rating()
+
+        def get_total_people(self, obj):
+            return obj.get_total_people()
+
+        def get_total_good(self, obj):
+            return obj.get_total_good()
+
 
 class CourierDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Courier
         fields = ['user', 'status_courier', 'current_orders']
+
+        def get_avg_rating(self, obj):
+            return obj.get_avg_rating()
+
+        def get_total_people(self, obj):
+            return obj.get_total_people()
+
+        def get_total_good(self, obj):
+            return obj.get_total_good()
 
 
 class StoreReviewSerializer(serializers.ModelSerializer):
@@ -171,18 +156,56 @@ class CourierReviewSerializer(serializers.ModelSerializer):
         model = CourierReview
         fields = '__all__'
 
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['category_name']
+
+
+class StoreListSerializer(serializers.ModelSerializer):
+    store_category = CategoryListSerializer(read_only=True, many=True)
+    avg_rating = serializers.SerializerMethodField()
+    total_people = serializers.SerializerMethodField()
+    total_good = serializers.SerializerMethodField()
+    store_images = StoreImageSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Store
+        fields = ['store_name', 'store_images', 'store_category', 'avg_rating','total_people', 'total_good']
+
+    def get_avg_rating(self, obj):
+       return obj.get_avg_rating()
+
+    def get_total_people(self, obj):
+       return obj.get_total_people()
+
+    def get_total_good(self, obj):
+       return obj.get_total_good()
+
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    # store_category = StoreListSerializer(many=True, read_only=True)
+    category_product = ProductListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['category_name', 'category_product']
+
+
 class StoreDetailSerializer(serializers.ModelSerializer):
     category = CategoryListSerializer(read_only=True)
-    owner = UserProfileSimpleSerializer(read_only=True, )
-    store_contact = Contact_InfoSerializer(read_only=True, many=True)
+    owner = UserProfileSimpleSerializer(read_only=True)
+    contact_info = Contact_InfoSerializer(read_only=True, many=True)
     products = ProductListSerializer(read_only=True, many=True)
-    combo_products = ComboProductListSerializer(read_only=True, many=True)
+    combo_product = ComboProductListSerializer(read_only=True, many=True)
     store_review = StoreReviewSerializer(read_only=True, many=True)
+    store_images = StoreImageSerializer(read_only=True, many=True)
 
     class Meta:
         model = Store
         fields = [
-            'store_name', 'store_image', 'category', 'description',
-            'owner', 'address', 'store_contact', 'products',
-            'combo_products', 'store_review'
+            'store_name', 'store_images', 'category', 'description',
+            'owner', 'address', 'contact_info', 'products',
+            'combo_product', 'store_review'
         ]

@@ -4,7 +4,7 @@ from rest_framework.permissions import BasePermission
 
 class CheckStatus(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.user_role =='owner' or 'admin'
+        return request.user.user_role =='owner'
 
 
 class CheckOwner(permissions.BasePermission):
@@ -23,9 +23,4 @@ class UpdateCourier(permissions.BasePermission):
 
 class CreateReview(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.user_role == 'client' or 'admin'
-
-
-class CheckStoreOwner(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return request.user == obj.owner
+        return request.user.user_role == 'client'
