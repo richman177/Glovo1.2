@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import  AbstractUser 
 from phonenumber_field.modelfields import PhoneNumberField 
  
-
+ 
 class UserProfile(AbstractUser):
     ROLE_CHOICES = (
         ('client', 'Client'),
