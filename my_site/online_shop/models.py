@@ -5,7 +5,7 @@ from phonenumber_field.modelfields import PhoneNumberField
  
 class UserProfile(AbstractUser): 
     ROLE_CHOICES = (
-        ('client', 'Client'),
+        ('client', 'Client'), 
         ('courier', 'Courier'),
         ('owner', 'Owner'),
     )
